@@ -1,0 +1,36 @@
+name: Infraestructura deploy
+
+
+on: 
+  push: 
+    branches: [ "main" ]
+    paths: 
+      - 'jenkins_aws_lambda/**'
+
+
+jobs:
+  build:
+    name: terraform settings
+    runs-on: ubuntu-latest
+    env:
+       aws-ACCESS-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+       aws-secret-acces-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+    - name: check repo
+      uses: actions/checkout@v3
+    - name: Terraform version
+      run: terraform version
+
+    - name: terraform format
+      id: fmt
+      run: teraform fmt -check
+
+    - name: terraform init
+      id: init
+      run: terraform init
+
+
+    - name: terraform plan
+      id: plan
+      run: terraform plan -no-color
+
