@@ -101,3 +101,25 @@ resource "aws_lambda_permission" "allow_eventbridge" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.query_schedule.arn
 }
+
+
+
+
+### cloud watch para revisar las transacciones fallidas
+resource "aws_cloudwatch_metric_alarm" "failed_transactions_alarm" {
+  alarm_name          = "FailedTransactionsAlarm"
+  metric_name         = "ProcessedTransactions"
+  namespace           = "TransactionProcessing"
+  statistic           = "Sum"
+  period              = 300
+  evaluation_periods  = 1
+  threshold           = 1
+  comparison_operator = "LessThanThreshold"
+  alarm_description   = "Alarma cuando las transacciones fallidas superan el umbral."
+
+  dimensions = {
+    Success = "False"
+  }
+
+  alarm_actions = ["arn:aws:sns:us-east-1:123456789012:MyTopic"]
+}
